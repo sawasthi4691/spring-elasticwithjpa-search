@@ -1,22 +1,21 @@
 package com.group.search.service;
 
 import com.group.search.elasticrepo.ElasticCustomerRepository;
+import com.group.search.elasticrepo.ElasticEmployeeRepository;
 import com.group.search.model.Customer;
 import com.group.search.model.Employee;
-import com.group.search.elasticrepo.ElasticEmployeeRepository;
 import com.group.search.repository.CustomerRepository;
 import com.group.search.repository.EmployeeRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.reflect.FieldUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.criteria.Predicate;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -93,6 +92,7 @@ public class SearchServiceImpl implements SearchService{
      * @return : Specification<Customer>
      */
     private Specification<Customer> getSpecification(String filterText){
+        //Field[] fields = FieldUtils.getAllFields(Customer.class);
         return (root, criteriaQuery, criteriaBuilder) -> {
             criteriaQuery.distinct(true);
             Predicate predicateForCustomer = null;
@@ -107,5 +107,33 @@ public class SearchServiceImpl implements SearchService{
             return criteriaBuilder.and(predicateForCustomer);
         };
     }
+
+
+    @Override
+    public Page<Customer> findEmployeeProjectsExampleMatcher(String text)
+    {
+        /* Build Search object */
+        Customer customer = new Customer();
+        customer.setIpaddress(text);
+        customer.setDob(text);
+        customer.setEmail(text);
+        customer.setFirstName(text);
+        customer.setLastName(text);
+
+        /* Build Example and ExampleMatcher object */
+        ExampleMatcher customExampleMatcher = ExampleMatcher.matchingAny()
+                .withMatcher("firstName", ExampleMatcher.GenericPropertyMatchers.contains().ignoreCase())
+                .withMatcher("lastName", ExampleMatcher.GenericPropertyMatchers.contains().ignoreCase())
+                .withMatcher("email", ExampleMatcher.GenericPropertyMatchers.contains().ignoreCase())
+                .withMatcher("ipaddress", ExampleMatcher.GenericPropertyMatchers.contains().ignoreCase())
+                .withMatcher("dob", ExampleMatcher.GenericPropertyMatchers.contains().ignoreCase());
+
+        Example<Customer> employeeExample= Example.of(customer, customExampleMatcher);
+
+        /* Get employees based on search criteria*/
+        return customerRepository.findAll(employeeExample, PageRequest.of(0,
+                100, Sort.by(Sort.Direction.DESC,"firstName")));
+    }
+
 
 }

@@ -93,4 +93,14 @@ public class SearchController {
     public ResponseEntity<Page<Customer>> getAllCustomerBySpecification(@PathVariable String text){
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(searchService.findCustomerBySpecification(text));
     }
+
+    /**
+     * Get Data from DB using example matcher.
+     * @param text : text
+     * @return : ResponseEntity<Page<Customer>>
+     */
+    @GetMapping(value = "search/customer/example/{text}")
+    public ResponseEntity<Page<Customer>> getEmployeeProjectsExampleMatcher(@PathVariable String text){
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(searchService.findEmployeeProjectsExampleMatcher(text));
+    }
 }

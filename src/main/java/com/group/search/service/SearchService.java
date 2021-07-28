@@ -15,4 +15,6 @@ public interface SearchService {
     List<Customer> findCustomerList();
 
     Page<Customer> findCustomerBySpecification(String text);
+
+    Page<Customer> findEmployeeProjectsExampleMatcher(String text);
 }
