@@ -9,6 +9,7 @@ spring:
     username: sa
     password:
   jpa:
+    generate-ddl: true
     hibernate:
       ddl-auto: update
   data:
@@ -29,6 +30,19 @@ org:
 
 server:
   port: 9090
+
+logging:
+  level:
+    org:
+      hibernate:
+        SQL: debug
+        #this will print the value passed in sql.
+        #type:
+          #descriptor:
+            #sql: trace
+
+
+
 
 
 

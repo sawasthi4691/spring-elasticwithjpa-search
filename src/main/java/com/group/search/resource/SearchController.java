@@ -7,6 +7,7 @@ import com.group.search.service.SearchService;
 import com.group.search.utils.SearchQueryBuilder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -80,5 +81,16 @@ public class SearchController {
         List<Customer> customers = searchQueryBuilder.getCustomerText(text);
         log.info("Customer Size : " + customers.size());
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(customers);
+    }
+
+
+    /**
+     * Get Data from DB using criteria builder/specification.
+     * @param text : text
+     * @return : ResponseEntity<Page<Customer>>
+     */
+    @GetMapping(value = "search/customer/{text}")
+    public ResponseEntity<Page<Customer>> getAllCustomerBySpecification(@PathVariable String text){
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(searchService.findCustomerBySpecification(text));
     }
 }
